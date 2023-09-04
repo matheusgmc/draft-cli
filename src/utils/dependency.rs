@@ -37,8 +37,16 @@ impl Dependency {
         self
     }
 
-    pub fn set_command(mut self, name: &str, args_str: Vec<&str>) -> Self {
-        let args = args_str.iter().map(|s| s.to_string()).collect();
+    pub fn set_command<I, S>(mut self, name: &str, args_str: I) -> Self
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let args = args_str
+            .into_iter()
+            .map(|s| s.as_ref().to_string())
+            .collect();
+
         if self.commands.is_none() {
             self.commands = Some(vec![Command {
                 name: String::from(name),

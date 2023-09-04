@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 
-use crate::actions::api::Args;
-
 use super::dependency::Dependency;
 
 pub struct Suport {
@@ -13,13 +11,13 @@ impl Suport {
         vec![
             Dependency::new("tsx").set_command(
                 "npm",
-                vec!["pkg", "set", "scripts.dev=npx tsx watch src/index.ts"],
+                ["pkg", "set", "scripts.dev=npx tsx watch src/index.ts"],
             ),
             Dependency::new("ts-node-dev")
                 .set_type("@types/node")
                 .set_command(
                     "npm",
-                    vec![
+                    [
                         "pkg",
                         "set",
                         "scripts.dev=npx tsnd --respawn --transpile-only src/index.ts",
@@ -31,14 +29,14 @@ impl Suport {
     fn node_dependencies() -> Vec<Dependency> {
         vec![Dependency::new("nodemon").set_command(
             "npm",
-            vec!["pkg", "set", "scripts.dev=npx nodemon src/index.js"],
+            ["pkg", "set", "scripts.dev=npx nodemon src/index.js"],
         )]
     }
 
-    pub fn new(args: &mut Args) -> Suport {
-        let dependencies = match args.typescript {
+    pub fn new(typescript: bool, dependencies: &mut Vec<Dependency>) -> Suport {
+        let dependencies = match typescript {
             true => {
-                args.dev_dependencies.push(Dependency::new("typescript"));
+                dependencies.push(Dependency::new("typescript"));
                 Suport::typescript_dependencies()
             }
             false => Suport::node_dependencies(),

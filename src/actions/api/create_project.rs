@@ -1,10 +1,10 @@
-use crate::actions::api::Args;
+use crate::actions::new::Project;
 
 use std::{env, fs, path, process};
 
-pub fn main(args: &Args) {
+pub fn main(project: &mut Project) {
     let current_path = env::current_dir().unwrap();
-    let test = format!("{}/{}", current_path.display(), &args.name);
+    let test = format!("{}/{}", current_path.display(), &project.name);
     let project_folder = path::Path::new(&test);
 
     println!("Creating project folder in {}", test);
@@ -25,42 +25,18 @@ pub fn main(args: &Args) {
         .output()
         .expect("npm is not instaled");
 
-    if !args.typescript {
-        println!("Adding type module in package.json");
-        process::Command::new("npm")
-            .current_dir(project_folder)
-            .args(["pkg", "set", "type=module"])
-            .output()
-            .expect("error in set type module");
-    };
-
-    println!(
-        "Installing {} dev dependencies",
-        args.dev_dependencies.len()
-    );
-
-    for dev_dependency in args.dev_dependencies.iter() {
-        process::Command::new("npm")
-            .current_dir(project_folder)
-            .args(["install", "-D"])
-            .arg(dev_dependency.name.to_lowercase())
-            .output()
-            .expect("this dependency is not found");
-
-        if dev_dependency.commands.is_some() {
-            for command in dev_dependency.commands.as_ref().unwrap().iter() {
-                process::Command::new(&command.name)
-                    .current_dir(project_folder)
-                    .args(&command.args)
-                    .output()
-                    .expect("this dependency is not found");
-            }
+    match project.dependencies.last().unwrap().name.as_str() {
+        "typescript" => {
+            process::Command::new("npm")
+                .current_dir(project_folder)
+                .args(["pkg", "set", "type=module"])
+                .output()
+                .expect("error in set type module");
         }
-    }
-
-    println!("Installing {} dependencies", args.dependencies.len());
-
-    for dependency in args.dependencies.iter() {
+        _ => {}
+    };
+    println!("Installing {} dependencies", project.dependencies.len());
+    for dependency in project.dependencies.iter() {
         if dependency.commands.is_some() {
             for command in dependency.commands.as_ref().unwrap().iter() {
                 process::Command::new(&command.name)
@@ -92,12 +68,12 @@ pub fn main(args: &Args) {
                 .template
                 .as_ref()
                 .unwrap()
-                .create_template(project_folder.display().to_string(), args.typescript)
+                .create_template(project_folder.display().to_string())
         }
     }
 
     println!();
     println!("Done");
     println!("Your project was created in {}", test);
-    println!("cd {}", args.name);
+    println!("cd {}", project.name);
 }

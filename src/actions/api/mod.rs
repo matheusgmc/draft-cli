@@ -4,36 +4,23 @@ use crate::actions::api::frameworks::Frameworks;
 use crate::utils::dependency::Dependency;
 use crate::utils::suport::Suport;
 
+use super::new::Project;
+
 pub mod create_project;
 pub mod frameworks;
 
-#[derive(Debug, Clone)]
-pub struct Args {
-    pub name: String,
-    pub dev_dependencies: Vec<Dependency>,
-    pub dependencies: Vec<Dependency>,
-    pub typescript: bool,
-}
-
-pub fn init(name: String) {
+pub fn init(project: &mut Project) {
     let frameworks = Frameworks::new();
     let labels = frameworks.get_labels();
 
-    let mut args = Args {
-        name,
-        dev_dependencies: vec![],
-        dependencies: vec![],
-        typescript: true,
-    };
-
-    args.typescript = Confirm::with_theme(&ColorfulTheme::default())
+    let typescript = Confirm::with_theme(&ColorfulTheme::default())
         .with_prompt("Wil you use TypeScript?")
-        .default(args.typescript)
+        .default(false)
         .interact_opt()
         .unwrap()
         .unwrap();
 
-    let suport = Suport::new(&mut args);
+    let suport = Suport::new(typescript, &mut project.dependencies);
 
     let suport_labels = Dependency::get_labels(&suport.dependencies);
 
@@ -49,7 +36,7 @@ pub fn init(name: String) {
         .get(&suport_labels[dependency].to_lowercase())
         .unwrap();
 
-    args.dev_dependencies.push(item.clone());
+    project.dependencies.push(item.clone());
 
     let framework = Select::with_theme(&ColorfulTheme::default())
         .with_prompt("Select a framework:")
@@ -58,7 +45,7 @@ pub fn init(name: String) {
         .interact()
         .unwrap();
 
-    args.dependencies.push(
+    project.dependencies.push(
         frameworks
             .data
             .get(&labels[framework].to_lowercase())
@@ -66,5 +53,5 @@ pub fn init(name: String) {
             .clone(),
     );
 
-    create_project::main(&args);
+    create_project::main(project);
 }
