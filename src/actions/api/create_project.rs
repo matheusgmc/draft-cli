@@ -25,7 +25,7 @@ pub fn main(project: &mut Project) {
         .output()
         .expect("npm is not instaled");
 
-    let typescript = match project.dependencies.last().unwrap().name.as_str() {
+    let typescript = match project.dependencies.first().unwrap().name.as_str() {
         "typescript" => true,
         _ => {
             process::Command::new("npm")

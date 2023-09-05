@@ -50,7 +50,11 @@ impl Suport {
     pub fn new(typescript: bool, project: &mut Project) -> Suport {
         let dependencies = match typescript {
             true => {
-                project.dependencies.push(Dependency::new("typescript"));
+                project.dependencies.push(
+                    Dependency::new("typescript")
+                        .set_command("npm", ["install", "-D", "typescript"])
+                        .set_command("npx", ["tsc", "--init"]),
+                );
                 Suport::typescript_dependencies(&project.entry_point)
             }
             false => Suport::node_dependencies(&project.entry_point),
