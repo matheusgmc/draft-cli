@@ -1,19 +1,27 @@
-use clap::Parser;
+use clap::Command;
 
 pub mod actions;
 pub mod templates;
 pub mod utils;
 
-#[derive(Parser)]
-struct Cli {
-    action: String,
+fn command_new() -> Command {
+    Command::new("new").about("create new projects")
 }
 
 fn main() {
-    let args = Cli::parse();
+    let matches = Command::new("CLI-Draft")
+        .about("manager project Node.js")
+        .version("1.0.0")
+        .subcommand_required(true)
+        .arg_required_else_help(true)
+        .author("matheusgmc")
+        .subcommand(command_new())
+        .get_matches();
 
-    match args.action.to_lowercase().as_str() {
-        "new" => actions::new::init(),
-        _ => println!("This action is not exists"),
-    };
+    match matches.subcommand() {
+        Some(("new", _)) => {
+            actions::new::init();
+        }
+        _ => unreachable!(),
+    }
 }
