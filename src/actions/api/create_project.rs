@@ -25,15 +25,16 @@ pub fn main(project: &mut Project) {
         .output()
         .expect("npm is not instaled");
 
-    match project.dependencies.last().unwrap().name.as_str() {
-        "typescript" => {
+    let typescript = match project.dependencies.last().unwrap().name.as_str() {
+        "typescript" => true,
+        _ => {
             process::Command::new("npm")
                 .current_dir(project_folder)
                 .args(["pkg", "set", "type=module"])
                 .output()
                 .expect("error in set type module");
+            false
         }
-        _ => {}
     };
     println!("Installing {} dependencies", project.dependencies.len());
     for dependency in project.dependencies.iter() {
@@ -54,7 +55,7 @@ pub fn main(project: &mut Project) {
                 .expect("this dependency is not found");
         }
 
-        if dependency.types.is_some() {
+        if dependency.types.is_some() && typescript {
             process::Command::new("npm")
                 .current_dir(project_folder)
                 .args(["install", "-D"])

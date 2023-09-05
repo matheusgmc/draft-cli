@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use crate::actions::new::Project;
+
 use super::dependency::Dependency;
 
 pub struct Suport {
@@ -7,11 +9,15 @@ pub struct Suport {
 }
 
 impl Suport {
-    fn typescript_dependencies() -> Vec<Dependency> {
+    fn typescript_dependencies(entry_point: &String) -> Vec<Dependency> {
         vec![
             Dependency::new("tsx").set_command(
                 "npm",
-                ["pkg", "set", "scripts.dev=npx tsx watch src/index.ts"],
+                [
+                    "pkg",
+                    "set",
+                    format!("scripts.dev=npx tsx watch src/{}.ts", &entry_point).as_str(),
+                ],
             ),
             Dependency::new("ts-node-dev")
                 .set_type("@types/node")
@@ -20,26 +26,34 @@ impl Suport {
                     [
                         "pkg",
                         "set",
-                        "scripts.dev=npx tsnd --respawn --transpile-only src/index.ts",
+                        format!(
+                            "scripts.dev=npx tsnd --respawn --transpile-only src/{}.ts",
+                            &entry_point
+                        )
+                        .as_str(),
                     ],
                 ),
         ]
     }
 
-    fn node_dependencies() -> Vec<Dependency> {
+    fn node_dependencies(entry_point: &String) -> Vec<Dependency> {
         vec![Dependency::new("nodemon").set_command(
             "npm",
-            ["pkg", "set", "scripts.dev=npx nodemon src/index.js"],
+            [
+                "pkg",
+                "set",
+                format!("scripts.dev=npx nodemon src/{}.js", &entry_point).as_str(),
+            ],
         )]
     }
 
-    pub fn new(typescript: bool, dependencies: &mut Vec<Dependency>) -> Suport {
+    pub fn new(typescript: bool, project: &mut Project) -> Suport {
         let dependencies = match typescript {
             true => {
-                dependencies.push(Dependency::new("typescript"));
-                Suport::typescript_dependencies()
+                project.dependencies.push(Dependency::new("typescript"));
+                Suport::typescript_dependencies(&project.entry_point)
             }
-            false => Suport::node_dependencies(),
+            false => Suport::node_dependencies(&project.entry_point),
         };
 
         Suport {

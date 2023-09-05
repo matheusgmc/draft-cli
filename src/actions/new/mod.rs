@@ -4,6 +4,7 @@ use dialoguer::{theme::ColorfulTheme, Input, Select};
 #[derive(Debug, Clone)]
 pub struct Project {
     pub name: String,
+    pub entry_point: String,
     pub category: String,
     pub dependencies: Vec<Dependency>,
 }
@@ -12,6 +13,7 @@ pub fn init() {
     let mut project = Project {
         name: String::from("my_project"),
         category: String::from("Blank"),
+        entry_point: String::from("index"),
         dependencies: vec![],
     };
 

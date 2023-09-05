@@ -10,6 +10,8 @@ pub mod create_project;
 pub mod frameworks;
 
 pub fn init(project: &mut Project) {
+    project.entry_point = String::from("server");
+
     let frameworks = Frameworks::new();
     let labels = frameworks.get_labels();
 
@@ -20,7 +22,7 @@ pub fn init(project: &mut Project) {
         .unwrap()
         .unwrap();
 
-    let suport = Suport::new(typescript, &mut project.dependencies);
+    let suport = Suport::new(typescript, project);
 
     let suport_labels = Dependency::get_labels(&suport.dependencies);
 
