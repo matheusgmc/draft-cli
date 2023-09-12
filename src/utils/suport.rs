@@ -11,14 +11,16 @@ pub struct Suport {
 impl Suport {
     fn typescript_dependencies(entry_point: &String) -> Vec<Dependency> {
         vec![
-            Dependency::new("tsx").set_command(
-                "npm",
-                [
-                    "pkg",
-                    "set",
-                    format!("scripts.dev=npx tsx watch src/{}.ts", &entry_point).as_str(),
-                ],
-            ),
+            Dependency::new("tsx")
+                .set_command("npm", ["install", "-D", "tsx"])
+                .set_command(
+                    "npm",
+                    [
+                        "pkg",
+                        "set",
+                        format!("scripts.dev=npx tsx watch src/{}.ts", &entry_point).as_str(),
+                    ],
+                ),
             Dependency::new("ts-node-dev")
                 .set_type("@types/node")
                 .set_command(
@@ -37,14 +39,16 @@ impl Suport {
     }
 
     fn node_dependencies(entry_point: &String) -> Vec<Dependency> {
-        vec![Dependency::new("nodemon").set_command(
-            "npm",
-            [
-                "pkg",
-                "set",
-                format!("scripts.dev=npx nodemon src/{}.js", &entry_point).as_str(),
-            ],
-        )]
+        vec![Dependency::new("nodemon")
+            .set_command("npm", ["install", "-D", "nodemon"])
+            .set_command(
+                "npm",
+                [
+                    "pkg",
+                    "set",
+                    format!("scripts.dev=npx nodemon src/{}.js", &entry_point).as_str(),
+                ],
+            )]
     }
 
     pub fn new(typescript: bool, project: &mut Project) -> Suport {

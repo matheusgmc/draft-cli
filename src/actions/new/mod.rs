@@ -1,5 +1,10 @@
-use crate::{actions::api, utils::dependency::Dependency};
-use dialoguer::{theme::ColorfulTheme, Input, Select};
+use crate::{
+    actions::api,
+    utils::{dependency::Dependency, suport::Suport},
+};
+use dialoguer::{theme::ColorfulTheme, Confirm, Input, Select};
+
+use super::blank;
 
 #[derive(Debug, Clone)]
 pub struct Project {
@@ -34,8 +39,34 @@ pub fn init() {
 
     project.category = selections[select].to_string();
 
+    let typescript = Confirm::with_theme(&ColorfulTheme::default())
+        .with_prompt("Wil you use TypeScript?")
+        .default(false)
+        .interact_opt()
+        .unwrap()
+        .unwrap();
+
+    let suport = Suport::new(typescript, &mut project);
+
+    let suport_labels = Dependency::get_labels(&suport.dependencies);
+
+    let dependency = Select::with_theme(&ColorfulTheme::default())
+        .with_prompt("run the project using:")
+        .default(0)
+        .items(&suport_labels)
+        .interact()
+        .unwrap();
+
+    let item = suport
+        .dependencies
+        .get(&suport_labels[dependency].to_lowercase())
+        .unwrap();
+
+    project.dependencies.push(item.clone());
+
     match project.category.to_lowercase().as_str() {
         "api" => api::init(&mut project),
+        "blank" => blank::init(&mut project),
         _ => println!("Select is not found"),
     }
 }
