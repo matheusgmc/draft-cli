@@ -1,10 +1,18 @@
 use std::fs;
 
+use rust_embed::RustEmbed;
+
 #[derive(Debug, Clone)]
 pub struct Template {
     pub file_path: String,
     pub file_name: String,
 }
+
+#[derive(RustEmbed)]
+#[folder = "src/templates/tpls"]
+#[include = "*.tpl"]
+#[exclude = "*.rs"]
+struct Asset;
 
 impl Template {
     pub fn new(file: &str, file_name: &str) -> Template {
@@ -20,7 +28,7 @@ impl Template {
             fs::create_dir(&src_path).expect("error in create src folder");
         }
 
-        let path_templates = format!("./src/templates/{}.tpl", self.file_path);
+        let path_templates = format!("{}.tpl", self.file_path);
         let mut file_name = self.file_name.clone();
         let package_string = fs::read_to_string(format!("{}/package.json", project_path))
             .expect("error in read package json");
@@ -30,7 +38,10 @@ impl Template {
         } else {
             file_name.push_str(".js");
         }
-        let content = fs::read_to_string(&path_templates).expect("Error in read template");
+
+        let file = Asset::get(&path_templates).expect("Error in read template");
+
+        let content = std::str::from_utf8(file.data.as_ref()).unwrap();
 
         let path_file_name = format!("{}/{}", src_path, file_name);
 

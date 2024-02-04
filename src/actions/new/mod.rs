@@ -37,6 +37,10 @@ pub fn init() {
         .interact()
         .unwrap();
 
+    if selections[select] == "API" {
+        project.entry_point = String::from("server");
+    }
+
     project.category = selections[select].to_string();
 
     let typescript = Confirm::with_theme(&ColorfulTheme::default())

@@ -12,12 +12,12 @@ impl Frameworks {
         let map = Dependency::select_from(vec![
             Dependency::new("Express")
                 .set_type("@types/express")
-                .set_template("express/express", "server"),
+                .set_template("express", "server"),
             Dependency::new("Fastify"),
             Dependency::new("Express with cors")
                 .set_type("@types/express")
                 .set_type("@types/cors")
-                .set_template("express/express-cors", "server")
+                .set_template("express-cors", "server")
                 .set_command("npm", ["install", "express"]),
         ]);
 
