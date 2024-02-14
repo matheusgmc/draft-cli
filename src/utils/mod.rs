@@ -1,4 +1,4 @@
-pub mod command;
+pub mod categories;
 pub mod create_project;
-pub mod dependency;
-pub mod suport;
+pub mod dependencies;
+pub mod project;
