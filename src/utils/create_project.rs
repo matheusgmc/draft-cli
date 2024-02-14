@@ -1,4 +1,8 @@
-use std::{env, fs, path, process};
+use std::{
+    env, fs,
+    path::{self},
+    process,
+};
 
 use super::project::Project;
 
@@ -59,6 +63,14 @@ pub fn main(project: &mut Project) {
                 .arg(&dependency.package)
                 .output()
                 .expect("error in install types");
+        }
+
+        if dependency.template.is_some() {
+            dependency
+                .template
+                .as_ref()
+                .unwrap()
+                .create_template(project_folder.display().to_string());
         }
     }
 

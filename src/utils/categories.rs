@@ -22,8 +22,8 @@ pub struct Categories {
 }
 
 impl Categories {
-    pub fn build() -> Self {
-        let dependencies = Dependencies::build();
+    pub fn build(entry_point: &String) -> Self {
+        let dependencies = Dependencies::build(entry_point);
         let mut items: HashMap<String, Category> = HashMap::new();
 
         items.insert(

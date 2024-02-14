@@ -17,7 +17,7 @@ impl Project {
         Project {
             name: String::from("my_project"),
             entry_point: String::from("index"),
-            category: Categories::build().default(),
+            category: Categories::build(&String::from("index")).default(),
             typescript: true,
             dependencies: vec![],
         }

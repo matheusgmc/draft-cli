@@ -1,10 +1,13 @@
 use std::collections::HashMap;
 
+use crate::templates::Template;
+
 #[derive(Clone, Debug)]
 pub struct Dependency {
     pub name: String,
     pub package: String,
     pub dev: bool,
+    pub template: Option<Template>,
 }
 
 impl Dependency {
@@ -13,6 +16,7 @@ impl Dependency {
             name: name.to_string(),
             package: name.to_lowercase(),
             dev: false,
+            template: None,
         }
     }
 
@@ -21,7 +25,16 @@ impl Dependency {
             name: name.to_string(),
             package: package.to_string(),
             dev: false,
+            template: None,
         }
+    }
+
+    pub fn set_template(mut self, file_path: &str, file_name: &str) -> Self {
+        self.template = Some(Template {
+            file_path: String::from(file_path),
+            file_name: String::from(file_name),
+        });
+        self
     }
 
     pub fn dev(mut self) -> Self {
@@ -36,14 +49,28 @@ pub struct Dependencies {
 }
 
 impl Dependencies {
-    pub fn build() -> Dependencies {
+    pub fn build(entry_point: &String) -> Dependencies {
         let mut api = HashMap::new();
 
         api.insert(
             String::from("Express"),
             vec![
                 Dependency::new("express"),
-                Dependency::new("@types/express").dev(),
+                Dependency::new("@types/express")
+                    .set_template("express", entry_point)
+                    .dev(),
+            ],
+        );
+
+        api.insert(
+            String::from("Express with Cors"),
+            vec![
+                Dependency::new("express"),
+                Dependency::new("cors"),
+                Dependency::new("@types/cors").dev(),
+                Dependency::new("@types/express")
+                    .set_template("express-cors", entry_point)
+                    .dev(),
             ],
         );
 

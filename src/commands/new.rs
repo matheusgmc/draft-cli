@@ -2,7 +2,10 @@ use clap::Command;
 use dialoguer::{theme::ColorfulTheme, Confirm, Input, Select};
 
 use crate::utils::{
-    categories::Categories, create_project, dependencies::Dependencies, project::Project,
+    categories::Categories,
+    create_project,
+    dependencies::{Dependencies, Dependency},
+    project::Project,
 };
 
 pub fn command_new() -> Command {
@@ -42,10 +45,15 @@ pub fn handle() {
             .unwrap();
         project
             .dependencies
-            .extend(running.get(&running_labels[running_index]).unwrap().clone())
+            .extend(running.get(&running_labels[running_index]).unwrap().clone());
+
+        project.dependencies.extend(vec![
+            Dependency::new("typescript").dev(),
+            Dependency::new("@types/node").dev(),
+        ]);
     }
 
-    let categories = Categories::build();
+    let categories = Categories::build(&project.entry_point);
     let categories_labels = &categories.get_labels();
 
     let categories_index = Select::with_theme(&ColorfulTheme::default())
