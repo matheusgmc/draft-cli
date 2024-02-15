@@ -74,6 +74,11 @@ impl Dependencies {
             ],
         );
 
+        api.insert(
+            String::from("Fastify"),
+            vec![Dependency::new("fastify").set_template("fastify", entry_point)],
+        );
+
         Dependencies { api }
     }
 
