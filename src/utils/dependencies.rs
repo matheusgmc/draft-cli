@@ -46,11 +46,13 @@ impl Dependency {
 
 pub struct Dependencies {
     pub api: HashMap<String, Vec<Dependency>>,
+    pub extras: HashMap<String, Vec<Dependency>>,
 }
 
 impl Dependencies {
     pub fn build(entry_point: &String) -> Dependencies {
         let mut api = HashMap::new();
+        let mut extras = HashMap::new();
 
         api.insert(
             String::from("Express"),
@@ -79,7 +81,20 @@ impl Dependencies {
             vec![Dependency::new("fastify").set_template("fastify", entry_point)],
         );
 
-        Dependencies { api }
+        extras.insert(
+            String::from("Prisma - ORM"),
+            vec![
+                Dependency::new("@prisma/client"),
+                Dependency::new("prisma").dev(),
+            ],
+        );
+
+        extras.insert(
+            String::from("Jest - Testing"),
+            vec![Dependency::new("jest").dev()],
+        );
+
+        Dependencies { api, extras }
     }
 
     pub fn get_labels(hash: &HashMap<String, Vec<Dependency>>) -> Vec<String> {

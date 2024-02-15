@@ -1,5 +1,5 @@
 use clap::Command;
-use dialoguer::{theme::ColorfulTheme, Confirm, Input, Select};
+use dialoguer::{theme::ColorfulTheme, Confirm, Input, MultiSelect, Select};
 
 use crate::utils::{
     categories::Categories,
@@ -69,22 +69,40 @@ pub fn handle() {
         .unwrap()
         .clone();
 
-    let dependencies_labels = Dependencies::get_labels(&project.category.dependencies);
-    let dependencies_index = Select::with_theme(&ColorfulTheme::default())
-        .with_prompt("Select a framework:")
-        .default(0)
-        .items(&dependencies_labels)
+    if !project.category.dependencies.is_empty() {
+        let dependencies_labels = Dependencies::get_labels(&project.category.dependencies);
+        let dependencies_index = Select::with_theme(&ColorfulTheme::default())
+            .with_prompt("Select a framework:")
+            .default(0)
+            .items(&dependencies_labels)
+            .interact()
+            .unwrap();
+
+        project.dependencies.extend(
+            project
+                .category
+                .dependencies
+                .get(&dependencies_labels[dependencies_index])
+                .unwrap()
+                .clone(),
+        );
+    }
+
+    let extras = Dependencies::build(&project.entry_point).extras;
+    let extras_labels = Dependencies::get_labels(&extras);
+
+    let extras_index = MultiSelect::with_theme(&ColorfulTheme::default())
+        .with_prompt("extras (press 'space' to select):")
+        .defaults(&[])
+        .items(&extras_labels)
         .interact()
         .unwrap();
 
-    project.dependencies.extend(
+    for index in extras_index {
         project
-            .category
             .dependencies
-            .get(&dependencies_labels[dependencies_index])
-            .unwrap()
-            .clone(),
-    );
+            .extend(extras.get(&extras_labels[index]).unwrap().clone())
+    }
 
     create_project::main(&mut project)
 }
