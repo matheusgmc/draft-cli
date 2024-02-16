@@ -11,23 +11,27 @@ pub fn main(project: &mut Project) {
     let test = format!("{}/{}", current_path.display(), &project.name);
     let project_folder = path::Path::new(&test);
 
+    process::Command::new(&project.manager.name)
+        .output()
+        .expect(&format!("{} is not installed", &project.manager.name));
+
     println!("Creating project folder in {}", test);
     fs::create_dir(project_folder).unwrap();
 
     process::Command::new("node")
         .arg("-v")
         .output()
-        .expect("node is not instaled");
+        .expect("node is not installed");
 
     // env::set_current_dir(project_folder).unwrap();
 
-    println!("Initializing the project using npm");
+    println!("Initializing the project using npm init");
     process::Command::new("npm")
         .current_dir(project_folder)
         .arg("init")
         .arg("-y")
         .output()
-        .expect("npm is not instaled");
+        .expect("npm is not installed");
 
     let typescript = match project.typescript {
         true => true,
@@ -36,7 +40,7 @@ pub fn main(project: &mut Project) {
                 .current_dir(project_folder)
                 .args(["pkg", "set", "type=module"])
                 .output()
-                .expect("error in set type module");
+                .expect("error set type to module");
             false
         }
     };
@@ -50,19 +54,17 @@ pub fn main(project: &mut Project) {
                 return;
             };
 
-            process::Command::new("npm")
+            process::Command::new(&project.manager.name)
                 .current_dir(project_folder)
-                .args(["install", "-D"])
-                .arg(&dependency.package)
+                .args([&project.manager.dev_install, &dependency.package])
                 .output()
-                .expect("error in install types");
+                .expect("error install dev dependencies");
         } else {
-            process::Command::new("npm")
+            process::Command::new(&project.manager.name)
                 .current_dir(project_folder)
-                .arg("install")
-                .arg(&dependency.package)
+                .args([&project.manager.install, &dependency.package])
                 .output()
-                .expect("error in install types");
+                .expect("error install dependencies");
         }
 
         if dependency.template.is_some() {

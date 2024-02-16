@@ -1,6 +1,7 @@
 use super::{
     categories::{Categories, Category},
     dependencies::Dependency,
+    manager::Manager,
 };
 
 #[derive(Debug)]
@@ -10,6 +11,7 @@ pub struct Project {
     pub category: Category,
     pub dependencies: Vec<Dependency>,
     pub typescript: bool,
+    pub manager: Manager,
 }
 
 impl Project {
@@ -20,6 +22,7 @@ impl Project {
             category: Categories::build(&String::from("index")).default(),
             typescript: true,
             dependencies: vec![],
+            manager: Manager::default(),
         }
     }
 }

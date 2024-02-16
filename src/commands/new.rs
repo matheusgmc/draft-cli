@@ -5,6 +5,7 @@ use crate::utils::{
     categories::Categories,
     create_project,
     dependencies::{Dependencies, Dependency},
+    manager::Manager,
     project::Project,
 };
 
@@ -33,6 +34,18 @@ pub fn handle() {
         .interact_opt()
         .unwrap()
         .is_some();
+
+    let managers = Manager::build();
+    let manager_labels = Manager::get_labels(&managers);
+
+    let manager_index = Select::with_theme(&ColorfulTheme::default())
+        .with_prompt("package manager:")
+        .default(0)
+        .items(&manager_labels)
+        .interact()
+        .unwrap();
+
+    project.manager = managers[manager_index].clone();
 
     if project.typescript {
         let running = Dependencies::running_ts();
