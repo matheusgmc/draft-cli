@@ -27,8 +27,8 @@ impl Categories {
         let mut items: HashMap<String, Category> = HashMap::new();
 
         items.insert(
-            String::from("Blank"),
-            Category::new("Blank", HashMap::new()),
+            String::from("BLANK"),
+            Category::new("BLANK", HashMap::new()),
         );
         items.insert(String::from("API"), Category::new("API", dependencies.api));
 
@@ -36,7 +36,7 @@ impl Categories {
     }
 
     pub fn default(self) -> Category {
-        self.items.get("Blank").unwrap().clone()
+        self.items.get("BLANK").unwrap().clone()
     }
 
     pub fn get_labels(&self) -> Vec<String> {
