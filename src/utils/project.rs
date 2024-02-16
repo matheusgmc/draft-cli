@@ -15,12 +15,16 @@ pub struct Project {
 }
 
 impl Project {
-    pub fn default() -> Self {
+    pub fn default(name: &Option<&String>, ts: &Option<&bool>, category: &Option<&String>) -> Self {
         Project {
-            name: String::from("my_project"),
+            name: name.unwrap_or(&String::from("my_project")).to_string(),
             entry_point: String::from("index"),
-            category: Categories::build(&String::from("index")).default(),
-            typescript: true,
+            category: Categories::build(&String::from("index"))
+                .items
+                .get(&category.unwrap_or(&String::from("BLANK")).to_uppercase())
+                .unwrap()
+                .clone(),
+            typescript: *ts.unwrap_or(&true),
             dependencies: vec![],
             manager: Manager::default(),
         }

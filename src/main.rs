@@ -6,7 +6,7 @@ pub mod utils;
 fn main() {
     let matches = Command::new("draft-cli")
         .about("Create projects")
-        .version("0.2.0")
+        .version("0.2.1")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .author("matheusgmc")
@@ -14,7 +14,7 @@ fn main() {
         .get_matches();
 
     match matches.subcommand() {
-        Some(("new", _)) => commands::new::handle(),
+        Some(("new", args)) => commands::new::handle(args),
         _ => unreachable!(),
     }
 }
