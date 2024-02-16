@@ -29,7 +29,7 @@ pub fn handle() {
         .unwrap();
 
     project.typescript = Confirm::with_theme(&ColorfulTheme::default())
-        .with_prompt("Wil you use TypeScript?")
+        .with_prompt("will you use typescript?")
         .default(project.typescript)
         .interact_opt()
         .unwrap()
@@ -70,7 +70,7 @@ pub fn handle() {
     let categories_labels = &categories.get_labels();
 
     let categories_index = Select::with_theme(&ColorfulTheme::default())
-        .with_prompt("Project Type: ")
+        .with_prompt("project type: ")
         .default(0)
         .items(&categories_labels)
         .interact()
@@ -85,7 +85,7 @@ pub fn handle() {
     if !project.category.dependencies.is_empty() {
         let dependencies_labels = Dependencies::get_labels(&project.category.dependencies);
         let dependencies_index = Select::with_theme(&ColorfulTheme::default())
-            .with_prompt("Select a framework:")
+            .with_prompt("select a framework:")
             .default(0)
             .items(&dependencies_labels)
             .interact()
