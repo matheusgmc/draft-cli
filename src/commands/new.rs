@@ -76,7 +76,7 @@ pub fn handle(args: &ArgMatches) {
     project.manager = managers[manager_index].clone();
 
     if project.typescript {
-        let running = Dependencies::running_ts();
+        let running = Dependencies::running_ts(&project.entry_point, &project.typescript);
         let running_labels = Dependencies::get_labels(&running);
         let running_index = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("run the project using:")

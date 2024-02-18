@@ -1,8 +1,11 @@
 use std::{
-    env, fs,
+    env::{self},
+    fs,
     path::{self},
     process,
 };
+
+use crate::templates::Template;
 
 use super::project::Project;
 
@@ -23,8 +26,6 @@ pub fn main(project: &mut Project) {
         .output()
         .expect("node is not installed");
 
-    // env::set_current_dir(project_folder).unwrap();
-
     println!("Initializing the project using npm init");
     process::Command::new("npm")
         .current_dir(project_folder)
@@ -44,6 +45,11 @@ pub fn main(project: &mut Project) {
             false
         }
     };
+
+    if project.category.name == "BLANK" {
+        Template::new("blank", &project.entry_point)
+            .create_template(project_folder.display().to_string(), project.typescript);
+    }
 
     println!("Installing {} dependencies", project.dependencies.len());
     for dependency in project.dependencies.iter() {
@@ -72,7 +78,16 @@ pub fn main(project: &mut Project) {
                 .template
                 .as_ref()
                 .unwrap()
-                .create_template(project_folder.display().to_string());
+                .create_template(project_folder.display().to_string(), project.typescript);
+        }
+
+        for script in dependency.scripts.iter() {
+            process::Command::new("npm")
+                .current_dir(project_folder)
+                .args(["pkg", "set"])
+                .arg(script)
+                .output()
+                .expect("error set script");
         }
     }
 

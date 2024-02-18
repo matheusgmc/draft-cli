@@ -22,7 +22,7 @@ impl Template {
         }
     }
 
-    pub fn create_template(&self, project_path: String) {
+    pub fn create_template(&self, project_path: String, typescript: bool) {
         let src_path = format!("{}/src", project_path);
         if fs::read_dir(&src_path).is_err() {
             fs::create_dir(&src_path).expect("error in create src folder");
@@ -30,10 +30,8 @@ impl Template {
 
         let path_templates = format!("{}.tpl", self.file_path);
         let mut file_name = self.file_name.clone();
-        let package_string = fs::read_to_string(format!("{}/package.json", project_path))
-            .expect("error in read package json");
 
-        if package_string.contains("typescript") {
+        if typescript {
             file_name.push_str(".ts");
         } else {
             file_name.push_str(".js");

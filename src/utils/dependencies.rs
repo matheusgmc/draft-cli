@@ -8,6 +8,7 @@ pub struct Dependency {
     pub package: String,
     pub dev: bool,
     pub template: Option<Template>,
+    pub scripts: Vec<String>,
 }
 
 impl Dependency {
@@ -17,6 +18,7 @@ impl Dependency {
             package: name.to_lowercase(),
             dev: false,
             template: None,
+            scripts: vec![],
         }
     }
 
@@ -26,7 +28,13 @@ impl Dependency {
             package: package.to_string(),
             dev: false,
             template: None,
+            scripts: vec![],
         }
+    }
+
+    pub fn add_script(mut self, v: String) -> Self {
+        self.scripts.push(v);
+        self
     }
 
     pub fn set_template(mut self, file_path: &str, file_name: &str) -> Self {
@@ -101,13 +109,31 @@ impl Dependencies {
         hash.keys().map(|e| e.to_string()).collect()
     }
 
-    pub fn running_ts() -> HashMap<String, Vec<Dependency>> {
+    pub fn running_ts(entry_point: &String, typescript: &bool) -> HashMap<String, Vec<Dependency>> {
         let mut running_ts = HashMap::new();
 
-        running_ts.insert(String::from("tsx"), vec![Dependency::new("tsx").dev()]);
+        let ext = match typescript {
+            true => "ts",
+            false => "js",
+        };
+
+        running_ts.insert(
+            String::from("tsx"),
+            vec![Dependency::new("tsx")
+                .add_script(format!(
+                    "scripts.dev=npx tsx watch src/{}.{}",
+                    entry_point, ext
+                ))
+                .dev()],
+        );
         running_ts.insert(
             String::from("ts-node-dev"),
-            vec![Dependency::new("tsx").dev()],
+            vec![Dependency::new("ts-node-dev")
+                .add_script(format!(
+                    "scripts.dev=npx tsnd --respawn --transpile-only src/{}.{}",
+                    entry_point, ext
+                ))
+                .dev()],
         );
 
         running_ts
