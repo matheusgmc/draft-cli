@@ -62,13 +62,15 @@ pub fn main(project: &mut Project) {
 
             process::Command::new(&project.manager.name)
                 .current_dir(project_folder)
-                .args([&project.manager.dev_install, &dependency.package])
+                .args(project.manager.dev_install.as_mut().split(" "))
+                .arg(&dependency.package)
                 .output()
                 .expect("error install dev dependencies");
         } else {
             process::Command::new(&project.manager.name)
                 .current_dir(project_folder)
-                .args([&project.manager.install, &dependency.package])
+                .args(project.manager.install.as_mut().split(" "))
+                .arg(&dependency.package)
                 .output()
                 .expect("error install dependencies");
         }
