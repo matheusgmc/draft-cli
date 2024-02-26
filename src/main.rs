@@ -6,7 +6,7 @@ pub mod utils;
 fn main() {
     let matches = Command::new("draft-cli")
         .about("Create projects")
-        .version("0.2.1")
+        .version("0.2.3")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .author("matheusgmc")
