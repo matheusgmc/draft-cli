@@ -89,7 +89,9 @@ pub fn handle(args: &ArgMatches) {
             .extend(running.get(&running_labels[running_index]).unwrap().clone());
 
         project.dependencies.extend(vec![
-            Dependency::new("typescript").dev(),
+            Dependency::new("typescript")
+                .set_template("tsconfig", "tsconfig.json")
+                .dev(),
             Dependency::new("@types/node").dev(),
         ]);
     }

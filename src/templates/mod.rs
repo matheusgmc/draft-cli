@@ -31,17 +31,21 @@ impl Template {
         let path_templates = format!("{}.tpl", self.file_path);
         let mut file_name = self.file_name.clone();
 
-        if typescript {
-            file_name.push_str(".ts");
-        } else {
-            file_name.push_str(".js");
-        }
+        let path_file_name = match file_name.find(".").is_none() {
+            true => {
+                if typescript {
+                    file_name.push_str(".ts");
+                } else {
+                    file_name.push_str(".js");
+                }
+                format!("{}/{}", src_path, file_name)
+            }
+            false => format!("{}/{}", project_path, file_name),
+        };
 
         let file = Asset::get(&path_templates).expect("Error in read template");
 
         let content = std::str::from_utf8(file.data.as_ref()).unwrap();
-
-        let path_file_name = format!("{}/{}", src_path, file_name);
 
         fs::write(path_file_name, content).expect("error in create index file")
     }
