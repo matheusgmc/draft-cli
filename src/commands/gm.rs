@@ -32,7 +32,7 @@ pub fn handle() {
         .spawn()
         .expect("error git diff");
 
-    let gpt_process = process::Command::new("gpt")
+    let gpt_process = process::Command::new("tgpt")
             .args([
                 "-q",
                 "-w",
