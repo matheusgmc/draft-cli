@@ -93,6 +93,15 @@ pub fn main(project: &mut Project) {
         }
     }
 
+    process::Command::new("git")
+        .arg("init")
+        .current_dir(project_folder)
+        .output()
+        .expect("Failed to git init");
+
+    Template::new("gitignore", ".gitignore")
+        .create_template(project_folder.display().to_string(), project.typescript);
+
     println!();
     println!("Done");
     println!("Your project was created in {}", test);
