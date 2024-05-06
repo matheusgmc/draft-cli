@@ -12,11 +12,13 @@ fn main() {
         .author("matheusgmc")
         .subcommand(commands::new::command_new())
         .subcommand(commands::gm::command_gm())
+        .subcommand(commands::dotfiles::command_dotfiles())
         .get_matches();
 
     match matches.subcommand() {
         Some(("new", args)) => commands::new::handle(args),
         Some(("gc", _)) => commands::gm::handle(),
+        Some(("dotfiles", args)) => commands::dotfiles::handle(args),
         _ => unreachable!(),
     }
 }
